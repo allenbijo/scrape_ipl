@@ -25,7 +25,6 @@ def get_scorecard(url):
 			if table_name:
 				if table_name.text.strip() not in ["BATTING", "BOWLING"]:
 					continue
-				print(table_name.text.strip())
 				for row in table.find_all('tr'):
 					row_data = []
 					for cell in row.find_all('td'):
@@ -58,6 +57,36 @@ def get_scorecard(url):
 		print(f"Error: Failed to retrieve the webpage. Status code: {response.status_code}")
 
 
+def get_matches(url):
+	# Send an HTTP request and get the webpage content
+	response = requests.get(url)
+
+	# Check for successful response
+	if response.status_code == 200:
+		# Parse the HTML content
+		soup = BeautifulSoup(response.content, 'html.parser')
+
+		table =  soup.find('table')
+
+		# Extract match data
+		if table:
+			data = []
+			for row in table.find_all('tr'):
+				row_data = []
+				for cell in row.find_all('td'):
+					cell_text = cell.text.strip()
+					if cell.find('a'):
+						cell_text = cell.find('a')['href']
+					if cell_text:
+						row_data.append(cell_text)
+				if row_data:
+					data.append('https://www.espncricinfo.com/'+row_data[-1])
+
+	return data
+
 if __name__ == '__main__':
-	url = 'https://www.espncricinfo.com/series/indian-premier-league-2024-1410320/kolkata-knight-riders-vs-sunrisers-hyderabad-final-1426312/full-scorecard'
-	get_scorecard(url)
+	url = 'https://www.espncricinfo.com/records/trophy/team-match-results/indian-premier-league-117'
+	scorecards = get_matches(url)
+
+	for i in range(10):
+		get_scorecard(scorecards[i])
