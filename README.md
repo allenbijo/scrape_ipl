@@ -1,2 +1,2 @@
-# scrape_ipl
- Scrape IPL dataset from cricinfo
+# IPL Dataset scraper
+ Scrape IPL data from ESPN cricinfo
